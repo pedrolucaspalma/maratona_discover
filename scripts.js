@@ -31,17 +31,41 @@ const Modal = {
         amount: -20000,
         date: '23/01/2021'
     },
+    {
+        id: 4,
+        description: 'App',
+        amount: 300000,
+        date: '23/01/2021'
+    }
 ]
 
 const Transaction = {
+    all:transactions,
+    add(transaction){
+        Transaction.all.push(transaction)
+
+        App.reload()
+    },
     incomes(){
-        // somar as entradas
+        let income = 0;
+        Transaction.all.forEach((transaction) => {
+            if(transaction.amount > 0){
+                income += transaction.amount;
+            }
+        })
+        return income;
     },
     expenses(){
-        // somar as saídas
+        let expense = 0;
+        Transaction.all.forEach((transaction) => {
+            if(transaction.amount < 0){
+                expense += transaction.amount;
+            }
+        })
+        return expense;
     },
     total(){
-        // entradas - saídas
+        return Transaction.incomes() + Transaction.expenses();
     }
 }
 
@@ -69,6 +93,16 @@ const Transaction = {
         </td>
         `
         return html
+    },
+
+    updateBalance(){
+        document.getElementById('incomeDisplay').innerHTML = Utils.formatCurrency(Transaction.incomes())
+        document.getElementById('expenseDisplay').innerHTML = Utils.formatCurrency(Transaction.expenses())
+        document.getElementById('totalDisplay').innerHTML = Utils.formatCurrency(Transaction.total())
+    },
+
+    clearTransactions(){
+        DOM.transactionsContainer.innerHTML = ""
     }
 }
 
@@ -89,6 +123,28 @@ const Utils = {
     }
 }
 
-transactions.forEach(function(transaction){
-    DOM.addTransaction(transaction)
+const App = {
+    init(){
+
+        Transaction.all.forEach((transaction) => {
+            DOM.addTransaction(transaction)
+        })
+
+        DOM.updateBalance()
+    
+    },
+
+    reload(){
+        DOM.clearTransactions()
+        App.init()
+    },
+}
+
+App.init()
+
+Transaction.add({
+    id: 39,
+    description: 'alo',
+    amount: 200,
+    date: '23/01/2021'
 })
